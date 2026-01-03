@@ -38,12 +38,25 @@ class HysteriaConfig:
             except:
                 pass
 
+        # Extract SNI from TLS configuration
+        sni = None
+        if "tls" in loaded_config:
+            tls_config = loaded_config["tls"]
+            # Try explicit sni field first
+            if "sni" in tls_config:
+                sni = tls_config["sni"]
+            # Try domains list (Hysteria2 also supports this)
+            elif "domains" in tls_config and tls_config["domains"]:
+                sni = tls_config["domains"][0] if isinstance(tls_config["domains"], list) else tls_config["domains"]
+
         self._inbound = {
             "tag": "hysteria2",
             "protocol": "hysteria2",
             "port": port,
             "tls": "tls",
         }
+        if sni:
+            self._inbound["sni"] = [sni]
         if obfs_type and obfs_password:
             self._inbound.update({"path": obfs_password, "header_type": obfs_type})
 
