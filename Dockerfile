@@ -6,9 +6,10 @@ FROM python:3.12-alpine
 
 ENV PYTHONUNBUFFERED=1
 
-COPY --from=hysteria-image /usr/local/bin/hysteria /usr/local/bin/hysteria
-COPY --from=sing-box-image /usr/local/bin/sing-box /usr/local/bin/sing-box
-COPY --from=xray-image /usr/local/bin/xray /usr/local/bin/xray
+COPY --from=hysteria-image /usr/local/bin/hysteria /usr/bin/hysteria
+COPY --from=sing-box-image /usr/local/bin/sing-box /usr/bin/sing-box
+COPY --from=xray-image /usr/local/bin/xray /usr/bin/xray
+COPY --from=xray-image /usr/local/share/xray/ /usr/share/xray/
 
 WORKDIR /app
 

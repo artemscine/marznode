@@ -30,8 +30,18 @@ def get_x25519(xray_path: str, private_key: str = None) -> Dict[str, str] | None
     if private_key:
         cmd.extend(["-i", private_key])
     output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode("utf-8")
+
+    # New format (xray >= 25.x): PrivateKey: ...\nPassword: ...\nHash32: ...
+    # Password is the public key in new format
+    match = re.match(r"PrivateKey: (.+)\nPassword: (.+)\n", output)
+    if match:
+        private, public = match.groups()
+        return {"private_key": private, "public_key": public}
+
+    # Old format (xray < 25.x): Private key: ...\nPublic key: ...
     match = re.match(r"Private key: (.+)\nPublic key: (.+)", output)
     if match:
         private, public = match.groups()
         return {"private_key": private, "public_key": public}
+
     return None
